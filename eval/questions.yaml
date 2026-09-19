@@ -1,0 +1,519 @@
+# Evaluation set for the Samsung manual RAG system.
+#
+# Rebuilt 2026-09-07 against the real corpus: SM-A055F_UG_EU_Eng_Rev1.0_250507.pdf,
+# 32 pages, 76 chunks. The previous set was written for the deleted 28-manual
+# corpus and asked about battery, charging, screenshots and always-on display —
+# none of which appear anywhere in these 32 pages. It was replaced wholesale
+# rather than repaired.
+#
+# What this corpus actually covers: Gallery, Multi window, Samsung Internet,
+# Notes, Kids, Calendar, Reminder, Radio, Voice Recorder, My Files, Clock,
+# Calculator, Gaming Hub, SmartThings, sharing, Google apps, and the Settings
+# chapters for Connections (Wi-Fi, Bluetooth, NFC, data, hotspot, printing),
+# Connected devices, Modes and Routines, and Sounds and vibration.
+#
+# Gold labels are `expect` — substrings that must appear in the section path or
+# body of at least one retrieved chunk. Section paths are used rather than chunk
+# ids because ids change on every re-index, and a question's *right answer* does
+# not. `expect_text` optionally requires a phrase in the chunk body, for
+# questions where the section alone is too coarse. Note the asymmetry: `expect`
+# is matched against path + body, `expect_text` against the body only, so an
+# `expect_text` term that appears solely in a section title will never match.
+#
+# This manual has no PDF outline, so section paths are flat — there is no
+# `chapter > section` ancestry to match against, and two sections are both
+# called "Options" (Connections on p21, Sounds and vibration on p31). Labels
+# for those must lean on `expect_text`.
+#
+# Types:
+#   factual     — one fact, stated in one place
+#   procedural  — a sequence of steps
+#   spec        — a named option, value, or list of choices
+#   unanswerable — deliberately outside the manual; the system must refuse
+#
+# Questions are phrased the way a user would ask, NOT the way the manual writes
+# it. Copying the manual's wording would flatter BM25 and make the ablation
+# meaningless. Where a question has to name a feature the user would plausibly
+# already know the name of (Bluetooth, Wi-Fi, NFC), the surrounding phrasing is
+# still the user's, not the manual's.
+
+# --- Gallery -----------------------------------------------------------------
+
+- id: gallery-crop-zoom
+  type: procedural
+  question: I only want to keep part of a photo, how do I cut the rest out
+  expect: ["Cropping enlarged images"]
+  expect_text: ["Spread two fingers"]
+
+- id: gallery-deleted-recover
+  type: procedural
+  question: I deleted a picture by mistake, can I get it back
+  expect: ["recycle bin"]
+  expect_text: ["Restore"]
+
+- id: gallery-recycle-duration
+  type: factual
+  question: do deleted photos stay on the phone forever or do they eventually go
+  expect: ["recycle bin"]
+  expect_text: ["certain period"]
+
+- id: gallery-new-album
+  type: procedural
+  question: how do I group my pictures into a folder of my own
+  expect: ["Albums"]
+  expect_text: ["Create icon"]
+
+- id: gallery-album-types
+  type: spec
+  question: what different kinds of photo collections can I set up
+  expect: ["Albums"]
+  expect_text: ["Shared family album"]
+
+- id: gallery-cloud-backup
+  type: procedural
+  question: how do I get my pictures saved somewhere other than the phone
+  expect: ["Syncing images and videos"]
+  expect_text: ["OneDrive"]
+
+- id: gallery-stories-auto
+  type: factual
+  question: why is my phone grouping my photos into little montages on its own
+  expect: ["Stories"]
+  expect_text: ["date and location tags"]
+
+- id: gallery-video-brightness
+  type: procedural
+  question: while a video is playing how do I make the screen dimmer without leaving it
+  expect: ["Viewing videos"]
+  expect_text: ["brightness"]
+
+# --- Multi window ------------------------------------------------------------
+
+- id: multiwindow-two-apps
+  type: procedural
+  question: how do I get two things on screen at the same time
+  expect: ["Multi window"]
+  expect_text: ["split screen"]
+
+- id: multiwindow-swipe-gesture
+  type: procedural
+  question: I want a swipe to trigger the two-app view, where do I switch that on
+  expect: ["Launching Multi window"]
+  expect_text: ["Swipe for split screen"]
+
+- id: multiwindow-app-pair
+  type: procedural
+  question: can I save a pair of apps I always open together
+  expect: ["Launching Multi window"]
+  expect_text: ["app pair"]
+
+# --- Internet, Notes, Kids ---------------------------------------------------
+
+- id: browser-no-history
+  type: procedural
+  question: how do I look something up without it being kept in my history
+  expect: ["Secret mode"]
+
+- id: browser-secret-password
+  type: factual
+  question: can I put a password on the private browsing tabs
+  expect: ["Secret mode"]
+  expect_text: ["Lock Secret mode"]
+
+- id: notes-write-new
+  type: procedural
+  question: how do I jot something down
+  expect: ["Creating notes"]
+
+- id: notes-other-device
+  type: procedural
+  question: how do I read the same notes on my tablet
+  expect: ["Syncing notes"]
+  expect_text: ["Samsung Cloud"]
+
+- id: notes-handwriting
+  type: procedural
+  question: can I scribble with my finger instead of typing
+  expect: ["Creating notes"]
+  expect_text: ["Handwriting"]
+
+- id: kids-usage-history
+  type: procedural
+  question: where can I see what my child has been doing on the phone
+  expect: ["parental controls"]
+  expect_text: ["usage history"]
+
+- id: kids-exit
+  type: procedural
+  question: how do I get the phone back to normal after my kid has been using it
+  expect: ["Closing Samsung Kids"]
+
+- id: kids-unlock-code
+  type: factual
+  question: what code does it ask for when leaving the children's mode
+  expect: ["Samsung Kids"]
+  expect_text: ["screen lock method"]
+
+# --- Calendar, Reminder ------------------------------------------------------
+
+- id: calendar-add-appointment
+  type: procedural
+  question: how do I put an appointment in my diary
+  expect: ["Calendar"]
+  expect_text: ["Add event"]
+
+- id: calendar-work-account
+  type: procedural
+  question: my work meetings aren't showing up, how do I pull them in
+  expect: ["Syncing events"]
+  expect_text: ["Manage accounts"]
+
+- id: reminder-tick-off
+  type: procedural
+  question: how do I mark a to-do as done
+  expect: ["Using Reminder"]
+  expect_text: ["Complete"]
+
+- id: reminder-location-gps
+  type: factual
+  question: why won't it nudge me when I arrive somewhere
+  expect: ["Reminder"]
+  expect_text: ["GPS"]
+
+# --- Radio, Voice Recorder, utilities ----------------------------------------
+
+- id: radio-needs-headphones
+  type: factual
+  question: why does the radio insist I plug something in
+  expect: ["Radio"]
+  expect_text: ["antenna"]
+
+- id: radio-loudspeaker
+  type: procedural
+  question: can I hear the radio out loud instead of through earphones
+  expect: ["Playing through the speaker"]
+
+- id: voice-record-start
+  type: procedural
+  question: how do I capture what someone is saying
+  expect: ["Voice Recorder"]
+  expect_text: ["Record icon"]
+
+- id: voice-record-bookmark
+  type: procedural
+  question: can I mark an interesting spot part way through a recording
+  expect: ["Voice Recorder"]
+  expect_text: ["bookmark"]
+
+- id: files-free-space
+  type: procedural
+  question: my phone is full, where do I look to clear junk out
+  expect: ["My Files"]
+  expect_text: ["Manage storage"]
+
+- id: calculator-convert-units
+  type: spec
+  question: can it change one measurement into another
+  expect: ["Calculator"]
+  expect_text: ["unit conversion"]
+
+- id: gaming-hub-remove
+  type: procedural
+  question: how do I take a game off the games screen
+  expect: ["Removing a game"]
+
+- id: gaming-hub-missing
+  type: procedural
+  question: a game I installed isn't in the games app, how do I add it
+  expect: ["Gaming Hub"]
+  expect_text: ["Add games"]
+
+# --- Sharing -----------------------------------------------------------------
+
+- id: share-nearby-device
+  type: procedural
+  question: how do I send a photo to someone sitting next to me
+  expect: ["Quick Share"]
+  expect_text: ["Quick Share"]
+
+- id: share-recipient-cannot-forward
+  type: factual
+  question: can the person I send a file to pass it on to someone else
+  expect: ["Quick Share"]
+  expect_text: ["cannot be saved, copied, or resent"]
+
+- id: share-who-can-find-options
+  type: spec
+  question: what are my choices for who is allowed to send me things
+  expect: ["Setting who can find your phone"]
+  expect_text: ["Contacts only"]
+
+- id: share-mobile-data-cost
+  type: factual
+  question: does sending files this way use up my allowance
+  expect: ["Sharing content"]
+  expect_text: ["additional charges"]
+
+# --- Google apps, SmartThings, Members ---------------------------------------
+
+- id: google-ai-chat-app
+  type: spec
+  question: which of the preinstalled google things lets me chat with an ai
+  expect: ["Google apps"]
+  expect_text: ["Gemini"]
+
+- id: google-cloud-storage-app
+  type: spec
+  question: which google app keeps my files in the cloud
+  expect: ["Google apps"]
+  expect_text: ["Drive"]
+
+- id: smartthings-fault-cover
+  type: factual
+  question: if a smart plug I connected stops working, does Samsung sort it out
+  expect: ["SmartThings"]
+  expect_text: ["warranty"]
+
+- id: members-report-problem
+  type: factual
+  question: where do I go to report a fault or ask Samsung a question
+  expect: ["Samsung Members"]
+
+- id: global-goals-origin
+  type: factual
+  question: who set up the global goals and in what year
+  expect: ["Global Goals"]
+  expect_text: ["United Nations"]
+
+- id: tv-plus-which-models
+  type: spec
+  question: which handsets come with the free tv channels app
+  expect: ["Samsung TV Plus"]
+
+# --- Wi-Fi -------------------------------------------------------------------
+
+- id: wifi-join-network
+  type: procedural
+  question: how do I get onto the internet at home
+  expect: ["Connecting to a Wi-Fi network"]
+
+- id: wifi-stop-auto-join
+  type: factual
+  question: my phone keeps hopping onto a network by itself, how do I stop that
+  expect: ["Connecting to a Wi-Fi network"]
+  expect_text: ["Auto reconnect"]
+
+- id: wifi-borrow-password
+  type: procedural
+  question: can I get on my friend's network without them reading out the password
+  expect: ["Sharing Wi-Fi network passwords"]
+  expect_text: ["Request password"]
+
+- id: wifi-phone-to-phone
+  type: procedural
+  question: how do I link two phones straight to each other without a router
+  expect: ["Wi-Fi Direct"]
+
+# --- Bluetooth ---------------------------------------------------------------
+
+- id: bluetooth-pair-headphones
+  type: procedural
+  question: how do I hook up my wireless earbuds
+  expect: ["Pairing with other Bluetooth devices"]
+
+- id: bluetooth-forget-device
+  type: procedural
+  question: how do I remove a speaker I no longer use from the list
+  expect: ["Pairing with other Bluetooth devices"]
+  expect_text: ["Unpair"]
+
+- id: bluetooth-send-image
+  type: procedural
+  question: how do I pass a picture across using the wireless link
+  expect: ["Sending and receiving data"]
+
+- id: bluetooth-range-obstacles
+  type: factual
+  question: why does the sound cut out when I walk into the next room
+  expect: ["Precautions for using Bluetooth"]
+  expect_text: ["obstacles"]
+
+- id: bluetooth-samsung-liability
+  type: factual
+  question: is Samsung on the hook if data I send wirelessly gets intercepted
+  expect: ["Precautions for using Bluetooth"]
+  expect_text: ["not responsible"]
+
+# --- NFC ---------------------------------------------------------------------
+
+- id: nfc-read-tag
+  type: procedural
+  question: how do I get product info off one of those little tags
+  expect: ["Reading information from NFC tags"]
+
+- id: nfc-screen-must-be-on
+  type: factual
+  question: why does nothing happen when I hold my locked phone to a tag
+  expect: ["Reading information from NFC tags"]
+  expect_text: ["turned on and unlocked"]
+
+- id: nfc-where-to-tap
+  type: factual
+  question: which part of the phone do I hold against the card machine
+  expect: ["NFC"]
+  expect_text: ["back of your device"]
+
+- id: nfc-change-payment-app
+  type: procedural
+  question: how do I pick which app opens when I tap to pay
+  expect: ["Making payments with the NFC feature"]
+  expect_text: ["Default wallet app"]
+
+# --- Data, hotspot, printing -------------------------------------------------
+
+- id: data-background-restrict
+  type: procedural
+  question: my allowance is disappearing, how do I stop apps using it when I'm not looking
+  expect: ["Data saver"]
+
+- id: data-per-app-network
+  type: procedural
+  question: can I force one particular app to avoid wifi
+  expect: ["Allowed networks for apps"]
+
+- id: hotspot-share-connection
+  type: procedural
+  question: how do I get my laptop online through my phone
+  expect: ["Mobile Hotspot"]
+
+- id: hotspot-not-visible
+  type: factual
+  question: my laptop can't see the phone's network, what do I change
+  expect: ["Mobile Hotspot"]
+  expect_text: ["2.4"]
+
+- id: printer-setup
+  type: procedural
+  question: how do I get my phone talking to a printer
+  expect: ["Adding printer plug-ins"]
+
+- id: print-a-document
+  type: procedural
+  question: how do I actually send something to the printer
+  expect: ["Printing content"]
+
+- id: connection-wired-network
+  type: spec
+  question: is there any way to use a cable for the network instead of wireless
+  expect: ["More connection settings"]
+  expect_text: ["Ethernet"]
+
+- id: connection-secure-dns
+  type: spec
+  question: is there a setting for a more private name lookup
+  expect: ["More connection settings"]
+  expect_text: ["Private DNS"]
+
+- id: flight-mode-effect
+  type: spec
+  question: what gets switched off when I set it for flying
+  expect_text: ["Flight mode"]
+
+# --- Connected devices, modes, routines --------------------------------------
+
+- id: car-display-support
+  type: spec
+  question: can I put my phone on the screen built into my car
+  expect: ["Connected devices"]
+  expect_text: ["Android Auto"]
+
+- id: modes-add-profile
+  type: procedural
+  question: how do I set up a sleep or driving profile
+  expect: ["Adding modes"]
+
+- id: modes-turn-on-manually
+  type: procedural
+  question: how do I switch one of those profiles on myself rather than waiting
+  expect: ["Running modes"]
+  expect_text: ["Turn on"]
+
+- id: routines-automate-daily
+  type: procedural
+  question: how do I make the phone do something automatically every day
+  expect: ["Adding routines"]
+
+- id: routines-home-screen-shortcut
+  type: procedural
+  question: how do I get a one-tap button for an automation on my home screen
+  expect: ["Running routines"]
+  expect_text: ["widget"]
+
+# --- Sound -------------------------------------------------------------------
+
+- id: sound-surround-name
+  type: spec
+  question: what's the cinema-style surround option called
+  expect: ["Sound quality and effects"]
+  expect_text: ["Dolby Atmos"]
+
+- id: sound-even-out-volume
+  type: spec
+  question: is there something to stop quiet clips being so much quieter
+  expect: ["Sound quality and effects"]
+  expect_text: ["Loudness normalisation"]
+
+- id: sound-silence-temporarily
+  type: spec
+  question: can I mute it for just an hour rather than indefinitely
+  expect_text: ["Temporary mute"]
+
+- id: sound-split-app-output
+  type: procedural
+  question: can navigation come out of the phone while music goes to the car speakers
+  expect: ["Separate app sound"]
+
+# --- Unanswerable ------------------------------------------------------------
+# Genuinely absent from these 32 pages. This excerpt is the apps, connections
+# and sound chapters; it contains no device-basics, camera, security or
+# hardware material at all, so these have no grounding anywhere in the corpus.
+
+- id: u-battery-hours
+  type: unanswerable
+  question: how many hours of video playback does the battery give me
+
+- id: u-water-resistance
+  type: unanswerable
+  question: is this phone safe to take in the shower
+
+- id: u-screenshot
+  type: unanswerable
+  question: which buttons do I hold to grab a screenshot
+
+- id: u-camera-portrait
+  type: unanswerable
+  question: how do I blur the background when taking a picture of someone
+
+- id: u-factory-reset
+  type: unanswerable
+  question: how do I wipe the phone back to how it came out of the box
+
+- id: u-fingerprint-setup
+  type: unanswerable
+  question: how do I register my fingerprint to unlock the screen
+
+- id: u-sim-insert
+  type: unanswerable
+  question: which slot does the sim card physically go into
+
+- id: u-software-update
+  type: unanswerable
+  question: how do I install the latest android version
+
+- id: u-warranty-length
+  type: unanswerable
+  question: how long is the manufacturer warranty on this handset
+
+- id: u-esim-support
+  type: unanswerable
+  question: does this model support an esim as well as a physical one
